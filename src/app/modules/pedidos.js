@@ -29,13 +29,13 @@ module.exports = {
         const pedido = await bling(numPedido)
 
         if (pedido.erros) return pedido;
+        if (pedido.integracao == "AmazonFulfillment") return "Problema no pedido" + numPedido
 
         const db = await database()
 
         async function idLista(db, integracao) { //Retorna o id da lista para realizar o post, sempre sera o que estiver disponivel
             const correios = ["Olist", "SkyHub", "Kabum"];
             // Comentario abaixo para visualizar o funcionamento das chegadas de requisi;'ao
-            // console.log(`SELECT * FROM principal WHERE situacao = 'criar' and canal = '${integracao}'`)
             if (correios.indexOf(integracao) > -1) {
 
                 const [response] = await db.query(`SELECT * FROM principal WHERE situacao = 'criar' and canal = 'Correios'`)

@@ -1,3 +1,3 @@
-Versão 27/6/2022
+Version 27/6/2022
 
-Api feita utilizando Node JS, entregando as informações via Express.
+WEB API made using Node JS, delivering as info via Express.
