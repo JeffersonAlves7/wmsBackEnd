@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pedidosModule = require('../modules/pedidos')
+const { setTimeout } = require('timers/promises');
 
 router.get('/pedidos', async (req, res) => {
     try {
@@ -38,12 +39,31 @@ router.post('/pedidos', async (req, res) => {
         return res.status(400).send({ error: 'Não foram passadas as informações necessárias' })
     }
 
-    try {
-        const response = await pedidosModule.post(req.body)
-        res.send({ numPedido, response })
-    } catch (e) {
-        res.status(400).send({ error: "Algo não está certo" })
+    if (typeof (numPedido) === 'object') {
+        try {
+            const arrPedidos = []
+
+            for (let i = 0; i < numPedido.length; i++) {
+                const element = numPedido[i];
+                await setTimeout(100)
+                const response = await pedidosModule.post({ numPedido: element })
+                arrPedidos.push({ numPedido, response })
+            }
+
+            res.send(arrPedidos)
+        } catch (e) {
+            console.log(e)
+            res.status(400).send({ error: "Algo não está certo" })
+        }
+    } else {
+        try {
+            const response = await pedidosModule.post(req.body)
+            res.send({ numPedido, response })
+        } catch (e) {
+            res.status(400).send({ error: "Algo não está certo" })
+        }
     }
+
 })
 
 module.exports = app => app.use('/', router)

@@ -1,7 +1,7 @@
 const database = require('../database/index')
 const bling = require('../api/index')
 const listaModule = require('./listas');
-const itensModule = require('./itens')
+const itensModule = require('./itens');
 
 module.exports = {
     async get(params) {
@@ -26,8 +26,8 @@ module.exports = {
     },
     async post(params) {
         const { numPedido } = params
-
         const pedido = await bling(numPedido)
+
         if (pedido.erros) return pedido;
 
         const db = await database()
@@ -51,11 +51,10 @@ module.exports = {
 
                 await listaModule.post({ canal: integracao }) //Caso não tenha uma referente a este marketplace nós iremos criar um com esse canal
                 const [newResponse] = await db.query(`SELECT * FROM principal WHERE situacao = 'criar' and canal = '${integracao}'`)
-
+                console.log(response, newResponse)
                 return newResponse[0].id
             }
         }
-
         pedido.idLista = await idLista(db, pedido.integracao)
 
         const response = await db.query(
@@ -83,7 +82,7 @@ module.exports = {
 
         const [count] = await db.query(`SELECT COUNT(*) FROM pedidos WHERE idLista = ${idLista}`)
         const [res] = await db.query(`SELECT COUNT(*) FROM pedidos WHERE situacao="Embalado" AND idLista = ${idLista}`)
-        
+
         if (count[0]['COUNT(*)'] === res[0]['COUNT(*)']) {
             await db.query(`UPDATE pedidos SET situacao = "Finalizado" WHERE situacao="Embalado" AND idLista=${idLista}`)
             await db.query(`UPDATE principal SET situacao = "Finalizado" WHERE id=${idLista}`)

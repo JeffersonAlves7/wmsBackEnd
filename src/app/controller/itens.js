@@ -5,7 +5,7 @@ const itensModule = require('../modules/itens')
 
 router.get('/itens', async (req, res) => {
     const { pedidoBling } = req.query
-    if (pedidoBling == undefined) return res.status(402).send({ message: "Preciso que envie um número de nota fiscal" })
+    if (pedidoBling == undefined) return res.status(402).send({ message: "Preciso que envie um número referente a bling" })
 
     try {
         const itens = await itensModule.get(req.query)

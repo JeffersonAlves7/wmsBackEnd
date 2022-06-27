@@ -23,7 +23,7 @@ async function post(params) { //The params must be {idprincipal:int, canal, situ
     // insert into principal (canal) values ("ml");
     const { canal } = params
 
-    if (!(["Correios", "Shopee", "IntegraCommerce", "AmazonFulfillment"].indexOf(canal) > -1)) return
+    if (!(["Correios", "Shopee", "IntegraCommerce", "AmazonFulfillment", "MercadoLivre"].indexOf(canal) > -1)) return
 
     const connection = await connectionDB()
     let myquery = `INSERT INTO principal (canal) values ("${canal}")`
