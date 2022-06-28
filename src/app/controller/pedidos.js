@@ -10,6 +10,7 @@ router.get('/pedidos', async (req, res) => {
             response
         })
     } catch (e) {
+        console.log(e)
         res.status(400).send({ error: "Algo não está certo" })
     }
 })
@@ -45,14 +46,17 @@ router.post('/pedidos', async (req, res) => {
 
             for (let i = 0; i < numPedido.length; i++) {
                 const element = numPedido[i];
-                await setTimeout(100)
+                await setTimeout(300)
                 const response = await pedidosModule.post({ numPedido: element })
                 arrPedidos.push({ numPedido, response })
             }
 
             res.send(arrPedidos)
         } catch (e) {
-            console.log(e)
+            if (e.response) console.log(e.response.data.retorno)
+            else {
+                console.log(e)
+            }
             res.status(400).send({ error: "Algo não está certo" })
         }
     } else {
@@ -60,6 +64,10 @@ router.post('/pedidos', async (req, res) => {
             const response = await pedidosModule.post(req.body)
             res.send({ numPedido, response })
         } catch (e) {
+            if (e.response) console.log(e.response.data.retorno)
+            else {
+                console.log(e)
+            }
             res.status(400).send({ error: "Algo não está certo" })
         }
     }

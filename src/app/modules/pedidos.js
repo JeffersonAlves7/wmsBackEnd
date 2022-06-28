@@ -5,11 +5,13 @@ const itensModule = require('./itens');
 
 module.exports = {
     async get(params) {
-        const { idlista, situacao, chavedeacesso } = params
+        const { idLista, situacao, chavedeacesso, pedido } = params
+
         let myquery = `SELECT * FROM pedidos `
 
-        if (situacao != undefined && idlista != undefined) myquery += `where situacao='${situacao}' and idlista=${idlista}`;
-        else if (idlista != undefined) myquery += `where idLista=${idlista}`;
+        if (situacao != undefined && idLista != undefined) myquery += `where situacao='${situacao}' and idLista=${idLista}`;
+        else if (idLista != undefined) myquery += `where idLista=${idLista}`;
+        else if (pedido != undefined) myquery += `where pedido='${pedido}'`;
         else if (situacao != undefined) myquery += `where situacao='${situacao}'`;
         else if (chavedeacesso != undefined) myquery += `where chavedeacesso='${chavedeacesso}'`; //Pedidos's ID
 
@@ -33,8 +35,9 @@ module.exports = {
 
         const db = await database()
 
+        const correios = ["Olist", "SkyHub", "Kabum"];
+
         async function idLista(db, integracao) { //Retorna o id da lista para realizar o post, sempre sera o que estiver disponivel
-            const correios = ["Olist", "SkyHub", "Kabum"];
             // Comentario abaixo para visualizar o funcionamento das chegadas de requisi;'ao
             if (correios.indexOf(integracao) > -1) {
 
@@ -73,9 +76,8 @@ module.exports = {
         const { chavedeacesso, situacao } = params
         const db = await database()
 
-        let myquery = `UPDATE pedidos SET situacao = "${situacao}" WHERE chavedeacesso = "${chavedeacesso}"`
+        let myquery = `UPDATE pedidos SET situacao = "${situacao.toLowerCase()}" WHERE chavedeacesso = "${chavedeacesso}"`
         const [response] = await db.query(myquery)
-
 
         const [newRes] = await db.query(`SELECT * FROM pedidos WHERE chavedeacesso = "${chavedeacesso}"`)
         const idLista = newRes[0].idLista
