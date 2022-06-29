@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PostArea</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+
+      font-family: arial, sans-serif, serif;
+    }
+
+    body {
+      display: -webkit-flex;
+      display: -ms-flex;
+      display: flex;
+
+      -ms-align-items: center;
+      align-items: center;
+
+      justify-content: center;
+      flex-direction: column;
+
+      min-height: 100vh;
+      grid-gap: 3rem;
+    }
+
+    h1 {
+      text-shadow: 2px 5px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    main {
+      display: -webkit-flex;
+      display: -ms-flex;
+      display: flex;
+
+      -ms-align-items: center;
+      align-items: center;
+
+      justify-content: center;
+
+      flex-direction: column;
+    }
+
+    .components {
+      display: -webkit-flex;
+      display: -ms-flex;
+      display: flex;
+
+      -ms-align-items: center;
+      align-items: center;
+
+      justify-content: center;
+
+      flex-direction: column;
+      grid-gap: .8rem;
+    }
+
+    .content {
+      display: -webkit-flex;
+      display: -ms-flex;
+      display: flex;
+
+      -ms-align-items: flex-start;
+      align-items: flex-start;
+
+      flex-direction: column;
+      justify-content: center;
+
+      box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+      grid-gap: 1rem;
+      padding: 2rem;
+      border-radius: .5rem;
+    }
+
+    #complete {
+      color: green;
+      font-size: 1.2rem;
+      text-decoration: underline;
+      text-decoration-color: black;
+    }
+
+    #error {
+      color: red;
+    }
+
+    #listas>li {
+      list-style: none;
+    }
+
+    #listas>li>p {
+      font-size: 1.2rem;
+      text-decoration: underline;
+      text-decoration-color: red;
+    }
+
+    #enviar {
+      padding: .3rem .5rem;
+      border-radius: 10px;
+
+      outline: none;
+      border: none;
+
+      background-color: lightgreen;
+      box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+
+      font-size: 1.15rem;
+      font-weight: 600;
+      transition: transform .15s ease-out;
+      cursor: pointer;
+    }
+
+    #enviar:hover {
+      transform: scale(1.15);
+    }
+
+    .text-area {
+      outline: none;
+      border: none;
+      padding: .3rem .5rem;
+
+      width: 20rem;
+
+      box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+      font-size: 1.2rem;
+
+      border-radius: 5px;
+    }
+
+    .text-area:not(:focus) {
+      animation-name: textAnimate;
+      animation-duration: 1.5s;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes textAnimate {
+      0% {
+        opacity: 0.5
+      }
+
+      50% {
+        opacity: 1
+      }
+
+      100% {
+        opacity: 0.5
+      }
+    }
+  </style>
+  <meta name="author" content="Jefferson Alves">
+</head>
+
+<body>
+  <header>
+    <h1>Enviar pedidos para o WMS</h1>
+  </header>
+  <main>
+    <div class="components">
+      <p id="complete"></p>
+      <p id="error"></p>
+      <ul id="listas"></ul>
+    </div>
+    <div class="content">
+      <textarea id="textArea" class="text-area" type="text" placeholder="Insira os números"></textarea>
+      <button type="button" id="enviar">
+        Enviar
+      </button>
+    </div>
+  </main>
+  <script charset="utf-8">
+    const buttonEnviar = document.getElementById('enviar')
+    const textArea = document.getElementById('textArea')
+    const listas = document.getElementById('listas')
+    const errorArea = document.getElementById('error')
+    const completeArea = document.getElementById('complete')
+
+    class Numeros {
+      constructor() {
+        this.charLen = 5;
+        this.numbers = textArea.value.split(" ");
+      }
+      sendNumbers(numbers) {
+        fetch("/pedidos", {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "POST",
+          body: JSON.stringify({ numPedido: numbers })
+        }).then(res => {
+          console.log(res)
+          if (res.status == 400) {
+            errorArea.innerText = "Erro no envio, veja se os números são válidos."
+            return
+          }
+          completeArea.innerText = "Enviado com sucesso!"
+        })
+      }
+
+      throwErr(numbers) {
+        errorArea.innerText = "Erro nos seguintes números:"
+        for (let num of numbers) {
+          const paragraph = document.createElement('p')
+          paragraph.innerText = num
+
+          const list = document.createElement('li')
+          list.appendChild(paragraph)
+          listas.appendChild(list)
+        }
+      }
+
+      eraseList() {
+        listas.childNodes.forEach((li, i) => {
+          if (li.nodeName != "LI") return
+          listas.removeChild(li)
+        });
+      }
+    }
+
+    function main() {
+      errorArea.innerText = ""
+      completeArea.innerText = ""
+
+      const NUMBERS = new Numeros()
+      NUMBERS.eraseList()
+
+      const first_word = NUMBERS.numbers[0]
+      if (first_word.length !== NUMBERS.charLen) NUMBERS.charLen = first_word.length
+      const erros_in_numbers = []
+
+      for (let num of NUMBERS.numbers) {
+        if (num.length !== NUMBERS.charLen) erros_in_numbers.push(num);
+      }
+
+      if (erros_in_numbers[0]) { NUMBERS.throwErr(erros_in_numbers); return }
+      errorArea.innerText = ""
+
+      NUMBERS.sendNumbers(NUMBERS.numbers)
+    }
+
+    buttonEnviar.onclick = () => main()
+  </script>
+</body>
+
+</html>

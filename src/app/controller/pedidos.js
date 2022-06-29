@@ -40,6 +40,7 @@ router.post('/pedidos', async (req, res) => {
         return res.status(400).send({ error: 'Não foram passadas as informações necessárias' })
     }
 
+
     if (typeof (numPedido) === 'object') {
         try {
             const arrPedidos = []
@@ -53,10 +54,6 @@ router.post('/pedidos', async (req, res) => {
 
             res.send(arrPedidos)
         } catch (e) {
-            if (e.response) console.log(e.response.data.retorno)
-            else {
-                console.log(e)
-            }
             res.status(400).send({ error: "Algo não está certo" })
         }
     } else {
