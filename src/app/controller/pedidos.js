@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pedidosModule = require('../modules/pedidos')
+const pedidosModule = require('../modules/pedidos');
 const { setTimeout } = require('timers/promises');
 
 router.get('/pedidos', async (req, res) => {
@@ -54,6 +54,7 @@ router.post('/pedidos', async (req, res) => {
 
             res.send(arrPedidos)
         } catch (e) {
+            console.log(e)
             res.status(400).send({ error: "Algo não está certo" })
         }
     } else {
@@ -61,10 +62,7 @@ router.post('/pedidos', async (req, res) => {
             const response = await pedidosModule.post(req.body)
             res.send({ numPedido, response })
         } catch (e) {
-            if (e.response) console.log(e.response.data.retorno)
-            else {
-                console.log(e)
-            }
+            console.log(e)
             res.status(400).send({ error: "Algo não está certo" })
         }
     }

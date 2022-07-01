@@ -35,7 +35,7 @@ module.exports = {
 
         const db = await database()
 
-        const correios = ["Olist", "SkyHub", "Kabum"];
+        const correios = ["Olist", "SkyHub", "Kabum", "LojaIntegrada"];
 
         async function idLista(db, integracao) { //Retorna o id da lista para realizar o post, sempre sera o que estiver disponivel
             // Comentario abaixo para visualizar o funcionamento das chegadas de requisi;'ao
@@ -86,8 +86,8 @@ module.exports = {
         const [res] = await db.query(`SELECT COUNT(*) FROM pedidos WHERE situacao="Embalado" AND idLista = ${idLista}`)
 
         if (count[0]['COUNT(*)'] === res[0]['COUNT(*)']) {
-            await db.query(`UPDATE pedidos SET situacao = "Finalizado" WHERE situacao="Embalado" AND idLista=${idLista}`)
-            await db.query(`UPDATE principal SET situacao = "Finalizado" WHERE id=${idLista}`)
+            await db.query(`UPDATE pedidos SET situacao = "finalizado" WHERE situacao="Embalado" AND idLista=${idLista}`)
+            await db.query(`UPDATE principal SET situacao = "finalizado" WHERE id=${idLista}`)
         }
 
         db.end()

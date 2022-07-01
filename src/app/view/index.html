@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Jefferson Alves">
+  <meta name="description" content="Feito com o objetivo de enviar números de pedidos ao sistema">
   <title>PostArea</title>
   <style>
     * {
@@ -77,6 +79,32 @@
       padding: 2rem;
       border-radius: .5rem;
     }
+    .content > footer{
+      display: -webkit-flex;
+      display: -ms-flex;
+      display: flex;
+
+      -ms-align-items: center;
+      align-items: center;
+
+      justify-content: space-between;
+
+      width: 100%
+    }
+
+    #loading{
+      display: none;
+      /* display: flex; */
+
+      -ms-align-items: center;
+      align-items: center;
+
+      flex-direction: column;
+    }
+
+    #loading >p{
+      font-size: 0.7rem;
+    }
 
     #complete {
       color: green;
@@ -138,6 +166,38 @@
       animation-iteration-count: infinite;
     }
 
+    .rolling{
+      display: block;
+
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+
+      border: 5px solid rgba(0,0,0,0.2);
+      border-bottom-color: purple;
+
+      animation-name: roll;
+      animation-duration: 1.8s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes roll {
+      0% {
+        transform: rotate(0deg);
+        opacity: 1;
+      }
+
+      50% {
+        transform: rotate(180deg);
+        opacity: 0.4;
+      }
+
+      100% {
+        transform: rotate(359deg);
+        opacity: 1;
+      }
+    }
     @keyframes textAnimate {
       0% {
         opacity: 0.5
@@ -152,7 +212,6 @@
       }
     }
   </style>
-  <meta name="author" content="Jefferson Alves">
 </head>
 
 <body>
@@ -166,18 +225,27 @@
       <ul id="listas"></ul>
     </div>
     <div class="content">
-      <textarea id="textArea" class="text-area" type="text" placeholder="Insira os números"></textarea>
-      <button type="button" id="enviar">
-        Enviar
-      </button>
+      <main>
+        <textarea id="textArea" class="text-area" type="text" placeholder="Insira os números"></textarea>
+      </main>
+      <footer>
+        <button type="button" id="enviar">
+          Enviar
+        </button>
+        <div id="loading">
+          <span class="rolling"></span>
+          <p>Carregando...</p>
+        </div>
+      </footer>
     </div>
   </main>
   <script charset="utf-8">
-    const buttonEnviar = document.getElementById('enviar')
-    const textArea = document.getElementById('textArea')
-    const listas = document.getElementById('listas')
-    const errorArea = document.getElementById('error')
-    const completeArea = document.getElementById('complete')
+    const buttonEnviar = document.getElementById('enviar');
+    const textArea = document.getElementById('textArea');
+    const listas = document.getElementById('listas');
+    const errorArea = document.getElementById('error');
+    const completeArea = document.getElementById('complete');
+    const loading = document.getElementById('loading');
 
     class Numeros {
       constructor() {
@@ -194,10 +262,12 @@
           body: JSON.stringify({ numPedido: numbers })
         }).then(res => {
           console.log(res)
-          if (res.status == 400) {
+          if (res.status != 200) {
             errorArea.innerText = "Erro no envio, veja se os números são válidos."
+            loading.style = "display: none;"
             return
           }
+          loading.style = "display: none;"
           completeArea.innerText = "Enviado com sucesso!"
         })
       }
@@ -223,6 +293,7 @@
     }
 
     function main() {
+      loading.style = "display: flex;"
       errorArea.innerText = ""
       completeArea.innerText = ""
 
