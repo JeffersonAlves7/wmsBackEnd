@@ -5,6 +5,14 @@ const path = require("path")
 const projectConfig = require("../config/project.json")
 
 router.get("/imagem", async (req, res) => {
+    function getNoEnd(string) {
+        let lastIndex = 0;
+
+        for (var i = 0; i < string.length; i++) {
+            if (string[i] === "_") lastIndex = i
+        }
+        return string.substring(0, lastIndex)
+    }
     try {
         fs.readdir(path.resolve("src", "app", "public", "imagens"), (err, files) => {
             const { sku } = req.query
@@ -13,9 +21,13 @@ router.get("/imagem", async (req, res) => {
                 return
             }
             let retorno = false
+
             files.forEach((item, index) => {
                 if (item.replace(".jpg", "").replace(".png", "") === sku) {
                     res.redirect(projectConfig.url + "/imagens/" + item)
+                    retorno = true
+                } else if (item.replace(".jpg", "").replace(".png", "") === getNoEnd(sku)) {
+                    res.redirect({ url: projectConfig.url + "/imagens/" + item })
                     retorno = true
                 }
             })
