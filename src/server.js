@@ -24,8 +24,7 @@ fs.watch(path.resolve(__dirname, "app", "public", "notas-etiquetas"), (eventType
 
         child.stdout.on('data', function (data) {
             const retorno = data.toString()
-            console.log(retorno)
-
+            child.kill()
         })
     }
 })

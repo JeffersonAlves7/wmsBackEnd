@@ -5,7 +5,6 @@ import os
 import PyPDF2
 import shutil
 
-
 class Marketplace:
     def __init__(self, nome, nfs, etiquetas):
         self.nome = nome
@@ -148,15 +147,15 @@ def main():
             marketplace = ""
             #-------------------------------------------------#
                 #Trecho que irá checar o nome do marketplace
-            if indexOf(caminho.lower(), "shopee") > -1:
+            if indexOf(caminho.lower(), "shop") > -1:
                 marketplace = "shopee"
-            elif indexOf(caminho.lower(), "magalu") > -1:
+            elif indexOf(caminho.lower(), "maga") > -1:
                 marketplace = "magalu"
-            elif indexOf(caminho.lower(), "mercado") > -1:
+            elif indexOf(caminho.lower(), "merc") > -1:
                 marketplace = "ml"
             elif indexOf(caminho.lower(), "b2w") > -1:
                 marketplace = "b2w"
-            elif indexOf(caminho.lower(), "melhor") > -1:
+            elif indexOf(caminho.lower(), "mel") > -1 or indexOf(caminho.lower(), "corr") > -1:
                 marketplace = "me"
             else:
                 continue
@@ -227,7 +226,7 @@ def main():
                 nf = Pdf(CAMINHOS[0] + "/" + i)
                 Pdf.juntarPdf(i, "./src/app/public/notas/" + NotaFiscal.Number( nf.readPdf() ) + ".pdf") #já inserindo o nome certo
 
-        Path.eraseNotasEtiquetas()
+        Path.eraseNotasEtiquetas()              #Apaganto todas as notas fiscais e as etiquetas
     return 0
 
 if __name__ == '__main__':
