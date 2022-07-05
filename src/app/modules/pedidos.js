@@ -5,11 +5,12 @@ const itensModule = require('./itens');
 
 module.exports = {
     async get(params) {
-        const { idLista, situacao, chavedeacesso, pedido } = params
+        const { idLista, situacao, chavedeacesso, pedido, date } = params
 
         let myquery = `SELECT * FROM pedidos `
 
         if (situacao != undefined && idLista != undefined) myquery += `where situacao='${situacao}' and idLista=${idLista}`;
+        else if (date != undefined) myquery += `WHERE DATE(date) > DATE(CURRENT_DATE() - INTERVAL 10 HOUR) AND DATE(date) < DATE(CURRENT_DATE() + INTERVAL 1 DAY);`;
         else if (idLista != undefined) myquery += `where idLista=${idLista}`;
         else if (pedido != undefined) myquery += `where pedido='${pedido}'`;
         else if (situacao != undefined) myquery += `where situacao='${situacao}'`;
