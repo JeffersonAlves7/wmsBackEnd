@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const apiBling = require('../api/index')
 const itensModule = require('../modules/itens')
 
 router.get('/itens', async (req, res) => {
@@ -18,4 +17,5 @@ router.get('/itens', async (req, res) => {
         res.status(400).send({ error: "Algo não está certo" })
     }
 })
+
 module.exports = app => app.use('/', router)
