@@ -9,13 +9,15 @@ module.exports = {
 
         let myquery = `SELECT * FROM pedidos `
 
-        if (situacao != undefined && idLista != undefined) myquery += `where situacao='${situacao}' and idLista=${idLista}`;
+        if (situacao != undefined && idLista != undefined) myquery += `where situacao='${situacao}' and idLista=${idLista} ORDER by idLista DESC`;
         else if (date != undefined) myquery += `WHERE DATE(date) > DATE(CURRENT_DATE() - INTERVAL 10 HOUR) AND DATE(date) < DATE(CURRENT_DATE() + INTERVAL 1 DAY);`;
-        else if (idLista != undefined) myquery += `where idLista=${idLista}`;
-        else if (pedido != undefined) myquery += `where pedido='${pedido}'`;
-        else if (situacao != undefined) myquery += `where situacao='${situacao}'`;
-        else if (chavedeacesso != undefined) myquery += `where chavedeacesso='${chavedeacesso}'`; //Pedidos's ID
-
+        else if (idLista != undefined) myquery += `where idLista=${idLista} ORDER by idLista DESC`;
+        else if (pedido != undefined) myquery += `where pedido='${pedido}' ORDER by idLista DESC`;
+        else if (situacao != undefined) myquery += `where situacao='${situacao}' ORDER by idLista DESC`;
+        else if (chavedeacesso != undefined) myquery += `where chavedeacesso='${chavedeacesso}' ORDER by idLista DESC`; //Pedidos's ID
+        else {
+            myquery += "ORDER by idLista DESC"
+        }
         const db = await database()
         const [response] = await db.query(myquery)
         if (params.itens === 'true') {

@@ -6,8 +6,10 @@ async function get(params) {
 
     if (situacao != undefined && id != undefined) myquery += `where situacao='${situacao}' and id=${id}`;
     else if (id != undefined) myquery += `where id=${id}`;
-    else if (situacao != undefined) myquery += `where situacao='${situacao}'`;
-
+    else if (situacao != undefined) myquery += `where situacao='${situacao}' ORDER by id DESC`;
+    else {
+        myquery += "ORDER BY id DESC"
+    }
     const connection = await connectionDB()
     const [response] = await connection.query(myquery)
 
@@ -23,7 +25,7 @@ async function post(params) { //The params must be {idprincipal:int, canal, situ
     // insert into principal (canal) values ("ml");
     const { canal } = params
 
-    if ( ["Correios", "Shopee", "IntegraCommerce", "AmazonFulfillment", "MercadoLivre"].indexOf(canal) < 0 ) return
+    if (["Correios", "Shopee", "IntegraCommerce", "AmazonFulfillment", "MercadoLivre"].indexOf(canal) < 0) return
 
     const connection = await connectionDB()
     let myquery = `INSERT INTO principal (canal) values ("${canal}")`
