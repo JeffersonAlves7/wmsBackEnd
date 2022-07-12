@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser')
-const PORT = 2021;
+const config = require('./app/config/project.json')
 const path = require('path')
 const cors = require('cors')
 const fs = require('fs')
@@ -29,6 +29,6 @@ fs.watch(path.resolve(__dirname, "app", "public", "notas-etiquetas"), (eventType
     }
 })
 
-app.listen(PORT, () => {
-    console.log(`listening on port ${PORT}`)
+app.listen(config.port, () => {
+    console.log(`listening on port ${config.port}`)
 })
