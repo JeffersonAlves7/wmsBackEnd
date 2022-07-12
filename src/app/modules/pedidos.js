@@ -65,9 +65,9 @@ module.exports = {
 
         const response = await db.query(
             `INSERT INTO pedidos
-            (chavedeacesso, nf, serie, idLista, pedidoBling, pedido, integracao, qntItens)
+            (chavedeacesso, nf, serie, idLista, pedidoBling, pedido, integracao, qntItens, date)
             VALUES
-            ('${pedido.chavedeacesso}', '${pedido.nf}', ${pedido.serie}, ${pedido.idLista}, '${pedido.pedidoBling}', '${pedido.pedido}','${pedido.integracao}', ${pedido.qntItens})
+            ('${pedido.chavedeacesso}', '${pedido.nf}', ${pedido.serie}, ${pedido.idLista}, '${pedido.pedidoBling}', '${pedido.pedido}','${pedido.integracao}', ${pedido.qntItens}, now())
         `)
 
         await itensModule.post(pedido)
@@ -79,7 +79,8 @@ module.exports = {
         const { chavedeacesso, situacao } = params
         const db = await database()
 
-        let myquery = `UPDATE pedidos SET situacao = "${situacao.toLowerCase()}" WHERE chavedeacesso = "${chavedeacesso}"`
+        let myquery = `UPDATE pedidos SET situacao = "${situacao.toLowerCase()}", date = now() WHERE chavedeacesso = "${chavedeacesso}"`
+
         const [response] = await db.query(myquery)
 
         const [newRes] = await db.query(`SELECT * FROM pedidos WHERE chavedeacesso = "${chavedeacesso}"`)
