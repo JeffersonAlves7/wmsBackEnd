@@ -5,6 +5,8 @@ import os
 import PyPDF2
 import shutil
 
+CARACTERES = [' ', '\n', '\\', '\r', '\\\\', 'LU-', 'NF:', '-', ':']    #Essa variável não pode conter números mesmo que dentro da string
+
 class Marketplace:
     def __init__(self, nome, nfs, etiquetas):
         self.nome = nome
@@ -95,10 +97,14 @@ class NotaFiscal:
 
     def b2w(text_extracted):
         position = text_extracted.find('Pedido:')
-        nf_pedido = text_extracted[position:position+40]
+        nf_pedido = text_extracted[position:position+100]
 
         nf_pedido = nf_pedido.replace('Pedido:', '')
         nf_pedido = nf_pedido.replace('Shoptime', '')
+
+        for v in "Lojas_Americanas":
+            nf_pedido = nf_pedido.replace(v, "")
+
 
         for i in str(CARACTERES):
             nf_pedido = nf_pedido.replace(i, '')
@@ -141,7 +147,6 @@ class Etiqueta:
         etq_pedido = text_extracted[position:position+24]
 
         etq_pedido = etq_pedido.replace('Pedido:', '')
-        etq_pedido = etq_pedido.replace('P', '')
         etq_pedido = etq_pedido.replace('PLP', '')
 
         for i in str(CARACTERES):
@@ -155,7 +160,6 @@ def indexOf(str, value):
         return -1
     return str.index(value)
 
-CARACTERES = [' ', '\n', '\\', '\r', '\\\\', 'LU-', 'NF:', '-', ':']    #Essa variável não pode conter números mesmo que dentro da string
 CAMINHOS = [NotaFiscal().caminho, Etiqueta().caminho]
 
 def main():
