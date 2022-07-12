@@ -1,4 +1,3 @@
-const api = require('../api/index')
 const imageModule = require('./imagens')
 const database = require('../database/index')
 
