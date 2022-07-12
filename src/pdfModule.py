@@ -36,13 +36,11 @@ class Pdf:
 
     def juntarPdf(nomePdf, path_to_save): #Caminho precisa ser um array contendo [ nf, etq ]
         merge = PyPDF2.PdfFileMerger()
-
         for i in [NotaFiscal().caminho, Etiqueta().caminho]:
             arq = open(f'{i}/{nomePdf}', 'rb')
             dado = PyPDF2.PdfFileReader(arq)
             merge.append(dado)
             arq.close()
-
         merge.write(path_to_save)
 
 class Path:
@@ -95,6 +93,17 @@ class NotaFiscal:
             nf_pedido = nf_pedido.replace(i, '')
         return nf_pedido
 
+    def b2w(text_extracted):
+        position = text_extracted.find('Pedido:')
+        nf_pedido = text_extracted[position:position+40]
+
+        nf_pedido = nf_pedido.replace('Pedido:', '')
+        nf_pedido = nf_pedido.replace('Shoptime', '')
+
+        for i in str(CARACTERES):
+            nf_pedido = nf_pedido.replace(i, '')
+        return nf_pedido
+
 class Etiqueta:
     def __init__(self):
         self.caminho = "./src/app/public/paginas/etqs"
@@ -126,7 +135,19 @@ class Etiqueta:
         for i in str(CARACTERES):
             etq_pedido = etq_pedido.replace(i, '')
         return etq_pedido
+    
+    def b2w(text_extracted):
+        position = text_extracted.find('Pedido:')
+        etq_pedido = text_extracted[position:position+24]
 
+        etq_pedido = etq_pedido.replace('Pedido:', '')
+        etq_pedido = etq_pedido.replace('P', '')
+        etq_pedido = etq_pedido.replace('PLP', '')
+
+        for i in str(CARACTERES):
+            etq_pedido = etq_pedido.replace(i, '')
+        return etq_pedido
+    
 def indexOf(str, value):
     try:
         str.index(value)
@@ -211,11 +232,10 @@ def main():
                     nfNome = NotaFiscal.Pedido( nf.readPdf() )
                     etqNome = Etiqueta.Pedido( etq.readPdf() )
                 elif indexOf(["b2w"], marketplace.nome) > -1:
-                    nfNome = NotaFiscal.NF( nf.readPdf() )
-                    etqNome = Etiqueta.Fiscal( etq.readPdf() )
+                    nfNome = NotaFiscal.b2w( nf.readPdf() )
+                    etqNome = Etiqueta.b2w( etq.readPdf() )
                 else:
                     continue
-
                     #Trocando o nome das etiquetas e das notas fiscais
                     #Renomeando os arquivos para seus respectivos nomes
                 os.rename(nf.pdf, CAMINHOS[0] + '/' + nfNome + ".pdf")
