@@ -4,6 +4,8 @@ const config = require('./app/config/project.json')
 const path = require('path')
 const cors = require('cors')
 const fs = require('fs')
+process.env.TZ = "America/Sao_Paulo";
+
 // configuracoes para o aplicativo
 const app = express();
 const { spawn } = require('child_process');
