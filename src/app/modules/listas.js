@@ -39,7 +39,6 @@ async function get(params) {
     myquery += " ORDER BY id DESC"
     if (page !== undefined) myquery += ` LIMIT ${(page - 1) * 15},15;`;
 
-    console.log(myquery);
     const connection = await connectionDB()
     const [response] = await connection.query(myquery)
 

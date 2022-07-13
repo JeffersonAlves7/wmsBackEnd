@@ -44,7 +44,6 @@ module.exports = {
 
         const db = await database()
         const [response] = await db.query(myquery)
-        console.log(myquery)
         if (params.itens === 'true') {
             for (let i = 0; i < response.length; i++) {
                 const itens = await itensModule.get(response[i])
