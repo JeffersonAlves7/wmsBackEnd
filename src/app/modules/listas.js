@@ -1,15 +1,45 @@
 const connectionDB = require("../database/index")
 
 async function get(params) {
-    const { situacao, id } = params
+    const { situacao, id, date, page, interval, now } = params
     let myquery = `SELECT * FROM principal `
 
-    if (situacao != undefined && id != undefined) myquery += `where situacao='${situacao}' and id=${id}`;
-    else if (id != undefined) myquery += `where id=${id}`;
-    else if (situacao != undefined) myquery += `where situacao='${situacao}' ORDER by id DESC`;
-    else {
-        myquery += "ORDER BY id DESC"
+    if (interval != undefined && now != undefined) {
+        const [y, m, d] = now.split("-")
+        let [year, month, day] = now.split("-")
+
+        if (interval == "semana") {
+            day = Number(day) - 7
+            if (Number(day) - 7 < 1) { month = Number(month) - 1 }
+        }
+
+        if (interval == "mes") {
+            month = Number(month) - 1
+        }
+        myquery += `WHERE date BETWEEN "${year}-${month}-${day}" AND "${y}-${m}-${Number(d) + 1}"`
     }
+    else if (date != undefined) {
+        if (date === "true") {
+            myquery += `WHERE DATE(date) > DATE(CURRENT_DATE() - INTERVAL 10 HOUR) AND DATE(date) < DATE(CURRENT_DATE() + INTERVAL 1 DAY)`;
+        } else {
+            myquery += `WHERE DATE(date) = '${date}'`;
+        }
+    }
+    else if (interval !== undefined) {
+        if (interval == "semana") {
+            myquery += `WHERE DATE(date) > DATE(current_date() - INTERVAL 1 WEEK) AND DATE(date)  < DATE(current_date() + INTERVAL 1 DAY)`;
+        }
+        if (interval == "mes") {
+            month = `WHERE DATE(date) > DATE(current_date() - INTERVAL 1 MONTH) AND DATE(date)  < DATE(current_date() + INTERVAL 1 DAY)`;
+        }
+    }
+    if (id != undefined) myquery.indexOf("where") > -1 || myquery.indexOf("WHERE") > -1 ? myquery += ` AND id=${id}` : myquery += ` WHERE id=${id}`;
+    if (situacao != undefined) myquery.indexOf("where") > -1 || myquery.indexOf("WHERE") > -1 ? myquery += ` AND situacao='${situacao}'` : myquery += ` WHERE situacao='${situacao}'`;
+
+    // myquery += " ORDER BY id DESC"
+    if (page !== undefined) myquery += ` LIMIT ${(page - 1) * 15},15;`;
+
+    console.log(myquery);
     const connection = await connectionDB()
     const [response] = await connection.query(myquery)
 

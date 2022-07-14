@@ -5,30 +5,38 @@ const itensModule = require('./itens');
 
 module.exports = {
     async get(params) {
-        const { idLista, situacao, chavedeacesso, pedido, date, page } = params
+        const { idLista, situacao, chavedeacesso, pedido, date, page, interval, now } = params
 
         let myquery = `SELECT * FROM pedidos `
 
-        if (situacao != undefined && idLista != undefined) myquery += `where situacao='${situacao}' and idLista=${idLista}`;
-        else if (date != undefined) {
-            if (date === true) {
-                myquery += `WHERE DATE(date) > DATE(CURRENT_DATE() - INTERVAL 10 HOUR) AND DATE(date) < DATE(CURRENT_DATE() + INTERVAL 1 DAY)`;
-            } else {
-                myquery += `WHERE DATE(date) = '${date}'`;
+        if (situacao != undefined && idLista != undefined) myquery += `WHERE situacao='${situacao}' AND idLista=${idLista}`;
+        else if (date != undefined) date === "true" ? myquery += `WHERE DATE(date) > DATE(CURRENT_DATE() - INTERVAL 10 HOUR) AND DATE(date) < DATE(CURRENT_DATE() + INTERVAL 1 DAY)` : myquery += `WHERE DATE(date) = '${date}'`;
+        else if (interval != undefined && now != undefined) {
+            const [y, m, d] = now.split("-")
+            let [year, month, day] = now.split("-")
+
+            if (interval == "semana") {
+                day = Number(day) - 7
+                if (Number(day) - 7 < 1) { month = Number(month) - 1 }
             }
+
+            if (interval == "mes") {
+                month = Number(month) - 1
+            }
+            myquery += `WHERE date BETWEEN "${year}-${month}-${day}" AND "${y}-${m}-${Number(d) + 1}"`
         }
-        else if (idLista != undefined) myquery += `where idLista=${idLista}`;
-        else if (pedido != undefined) myquery += `where pedido='${pedido}'`;
-        else if (situacao != undefined) myquery += `where situacao='${situacao}'`;
-        else if (chavedeacesso != undefined) myquery += `where chavedeacesso='${chavedeacesso}'`; //Pedidos's ID
+
+        if (pedido != undefined) myquery.indexOf("where") > -1 || myquery.indexOf("WHERE") > -1 ? myquery += ` AND pedido='${pedido}'` : myquery += ` WHERE pedido='${pedido}'`;
+        if (idLista != undefined) myquery.indexOf("where") > -1 || myquery.indexOf("WHERE") > -1 ? myquery += ` AND idLista=${idLista}` : myquery += ` WHERE id=${id}`;
+        if (situacao != undefined) myquery.indexOf("where") > -1 || myquery.indexOf("WHERE") > -1 ? myquery += ` AND situacao='${situacao}'` : myquery += ` WHERE situacao='${situacao}'`;
+        if (chavedeacesso != undefined) myquery.indexOf("where") > -1 || myquery.indexOf("WHERE") > -1 ? myquery += ` AND chavedeacesso='${chavedeacesso}'` : myquery += ` WHERE chavedeacesso='${chavedeacesso}'`;
 
         myquery += " ORDER by idLista DESC"
         if (page !== undefined) myquery += ` LIMIT ${(page - 1) * 15},15;`;
 
-        console.log(myquery);
         const db = await database()
         const [response] = await db.query(myquery)
-
+        console.log(myquery)
         if (params.itens === 'true') {
             for (let i = 0; i < response.length; i++) {
                 const itens = await itensModule.get(response[i])
