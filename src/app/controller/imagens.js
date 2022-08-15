@@ -15,11 +15,12 @@ router.get("/imagem", async (req, res) => {
     }
     try {
         fs.readdir(path.resolve("src", "app", "public", "imagens"), (err, files) => {
-            const { sku } = req.query
+            let { sku } = req.query
             if (!sku) {
                 res.send(files)
                 return
             }
+            sku = sku.replaceAll("/", "")
             let retorno = false
 
             files.forEach((item, index) => {

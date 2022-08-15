@@ -33,7 +33,7 @@
     </nav>
     <main style="grid-auto-rows: 100vh;" class="container d-grid">
       <section id="enviarPedidos" class="row align-items-center justify-content-center">
-        <div>
+        <main>
           <div class="row">
             <div class="col">
               <h1 class="text-center">Enviar pedidos para o WMS</h1>
@@ -41,30 +41,31 @@
           </div>
           <div class="row">
             <div class="col">
-              <div class="components">
-                <div class="alert alert-success" id="complete">
+              <div class="d-flex flex-column">
+                <div v-if="success.hasSuccess" class="alert alert-success" id="complete">
+                  <p class="mb-0">{{success.message}}</p>
                 </div>
-                <div class="alert alert-danger" id="error">
+                <div v-if="error.hasError" class="alert alert-danger">
+                  <p class="mb-0">{{error.message}}</p>
                 </div>
-                <ul id="listas"></ul>
               </div>
               <div style="margin-bottom: 20px;" class="form-floating">
-                <textarea id="textArea" class="form-control" placeholder="Insira os números" id="floatingTextarea2"
-                  style="height: 100px"></textarea>
+                <textarea id="textArea" v-model="pedidos" class="form-control" placeholder="Insira os números"
+                  id="floatingTextarea2" style="height: 100px"></textarea>
                 <label for="floatingTextarea2">Insira os números</label>
               </div>
-              <button class="btn btn-primary" type="button" id="enviar">
-                Enviar
-              </button>
-              <div style="display: none;" id="loading">
-                <p>Carregando...</p>
+              <div style="gap: .8rem" class="d-flex align-items-center">
+                <button class="btn btn-primary" v-on:click="sendPedido" type="button">Enviar</button>
+                <div v-if="isLoading">
+                  <p class="mb-0">Carregando...</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </section>
       <section id="buscarPedidos" class="row align-items-center justify-content-center">
-        <div>
+        <main>
           <h1 class="text-center">Buscar e alterar pedidos</h1>
           <main style="margin-bottom: 2rem;" class="row">
             <div class="input-group">
@@ -108,7 +109,7 @@
               </li>
             </ul>
           </div>
-        </div>
+        </main>
       </section>
     </main>
   </main>
@@ -118,34 +119,92 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
     integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
     crossorigin="anonymous"></script>
-  <script charset="utf-8" src="/others/script.js"></script>
   <script>
-    const pedidos = new Vue({
+
+    const enviar = new Vue({
+      el: '#enviarPedidos',
+      data: {
+        pedidos: '',
+        trated: '',
+        isLoading: false,
+        error: {
+          hasError: false,
+          message: ""
+        },
+        success: {
+          hasSuccess: false,
+          message: ""
+        },
+      },
+      methods: {
+        sendPedido() {
+          this.isLoading = true
+
+          //Just for simulate the sending proccess
+          setTimeout(() => {
+            this.isLoading = false
+          }, 1000)
+        },
+        sendError(error){
+          this.error = error
+        },
+      },
+      watch: {
+        pedidos(p) {
+          const charsLen = 5
+          const arr = p.trim().split(" ").filter(a => a.trim() !== "")
+          this.sendError({hasError: false, message: ""})
+
+          for (let i = 0; i < arr.length; i++) {
+            const element = arr[i];
+            if ( (i === arr.length - 1) && !(element.length <= 5)) {
+              return this.sendError({hasError: true, message: "Números não foram inseridos corretamente"});
+            } else if( i !== arr.length - 1 &&  element.length !== 5){
+              return this.sendError({hasError: true, message: "Números não foram inseridos corretamente"});
+            }
+          }
+
+          let trat = '['
+          for (let i = 0; i < arr.length; i++) {
+            i === (arr.length - 1) ? trat += `'${arr[i]}'` : trat += `'${arr[i]}',`
+          };
+          trat += ']';
+          return this.trated = trat
+        }
+      }
+    })
+
+    const buscar = new Vue({
       el: '#buscarPedidos',
       data: {
         pedidos: [],
         busca: "",
+        navOpen: false
       },
       methods: {
         async getPedido() {
-          const { busca } = this;
-          if (busca.trim() == '') return this.pedidos = [];
+          const { busca } = this
+          if (busca.trim() == '') return this.pedidos = []
           try {
-            const res = await fetch(`http://wmsbarrarey.ddns.net:8083/pedidos/buscar?busca=${busca}`,
-              { method: "GET", mode: 'cors' });
-            const { response } = await res.json();
-            if (!response) return this.pedidos = [];
-            this.pedidos = response;
-          }
-          catch (e) {
-            this.pedidos = [];
+            const res = await fetch(`http://localhost:8083/pedidos/buscar?busca=${busca}`,
+              { method: "GET", mode: 'cors' })
+            const { response } = await res.json()
+            if (!response) return this.pedidos = []
+            this.pedidos = response
+          } catch (e) {
+            this.pedidos = []
           }
         },
-        isSelected(pedido, situacao) {
-          return pedido.situacao === situacao ? true : false;
-        },
+        isSelected(pedido, situacao) { return pedido.situacao === situacao ? true : false },
       },
+      watch: { 
+        busca(e){
+          if( e.trim() !== "") return
+          this.pedidos = []
+        }
+      }
     })
+
   </script>
 </body>
 

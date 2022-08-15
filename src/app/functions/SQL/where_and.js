@@ -1,0 +1,1 @@
+module.exports = function where_and(q) { return q.toLowerCase().indexOf("where") > -1 ? " AND" : " WHERE" }

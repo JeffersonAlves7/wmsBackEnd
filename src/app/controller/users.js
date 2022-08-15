@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const usersModule = require('../modules/users')
+
 router.get("/users", async function (req, res) {
     try {
         const response = await usersModule.get()
@@ -13,7 +14,7 @@ router.post("/register", async function (req, res) {
     try {
         const response = await usersModule.post(req.body)
 
-        res.send({ response: `Usuário ${response.nome} criado com sucesso!` })
+        res.send({ response: true, message: `Usuário ${response.nome} criado com sucesso!` })
     } catch ({ code }) {
         if (code == "ER_DUP_ENTRY") return res.status(400).send({ error: "Este usuário já existe" })
         res.status(400).send({ error: "As informações não foram passadas corretamente" })
@@ -22,8 +23,9 @@ router.post("/register", async function (req, res) {
 router.post("/login", async (req, res) => {
     try {
         const response = await usersModule.login(req.body)
+        if (response !== true) return res.status(200).send({ response })
         const isLoggedIn = await usersModule.isLoggedIn(req.body)
-        res.status(200).send({ isLoggedIn })
+        return res.status(200).send({ isLoggedIn })
     } catch (err) {
         console.log(err)
         res.status(400).send({ error: "Não foi possivel fazer login" })

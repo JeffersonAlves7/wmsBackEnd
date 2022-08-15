@@ -5,9 +5,7 @@ const listaModule = require('../modules/listas')
 router.get('/listas', async (req, res) => {
     try {
         const response = await listaModule.get(req.query)
-        res.send({
-            response
-        })
+        res.send(response)
     } catch (err) {
         console.log(err)
         return res.status(400).send({ error: 'Não foi possível coletar as informações' })
@@ -29,6 +27,7 @@ router.put('/listas', async (req, res) => {
         return res.status(400).send({ error: 'Não foi possível coletar as informações' })
     }
 })
+
 router.post('/listas', async (req, res) => {
     const { canal } = req.body
     if (canal === undefined) {

@@ -5,7 +5,7 @@ import os
 import PyPDF2
 import shutil
 
-CARACTERES = [' ', '\n', '\\', '\r', '\\\\', 'LU-', 'NF:', '-', ':']    #Essa variável não pode conter números mesmo que dentro da string
+CARACTERES = [' ', '\n', '\\', '\r', '\\\\', 'LU-', 'NF:', '-', ':', "Sub"]    #Essa variável não pode conter números mesmo que dentro da string
 
 class Marketplace:
     def __init__(self, nome, nfs, etiquetas):

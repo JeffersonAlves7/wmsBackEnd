@@ -6,9 +6,8 @@ async function get(params) {
   const db = await database();
   const [response] = await db.query(`SELECT * FROM itens WHERE pedidoBling = ${pedidoBling}`)
 
-  for (var i = 0; i < response.length; i++) {
-    response[i].imagem = await imageModule(response[i])
-  }
+  for (var i = 0; i < response.length; i++) { response[i].imagem = await imageModule(response[i]) }
+
   db.end()
   return response
 }
@@ -20,7 +19,12 @@ async function post(params) {
   for (var i = 0; i < itens.length; i++) {
     await db.query(`INSERT INTO itens
       (pedidoBling, sku, quantidade, descricao)
-      VALUES ('${pedidoBling}','${itens[i].item.codigo}',${itens[i].item.quantidade.split('.')[0]},'${itens[i].item.descricao.substr(0, 29)}')`)
+      VALUES (
+        '${pedidoBling}',
+        '${itens[i].item.codigo}'
+        ,${itens[i].item.quantidade.split('.')[0]},
+        '${itens[i].item.descricao.substr(0, 29)}')
+        `)
   }
   db.end()
 }
