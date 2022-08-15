@@ -69,6 +69,21 @@
           <h1 class="text-center">Buscar e alterar pedidos</h1>
           <main style="margin-bottom: 2rem;" class="row">
             <div class="input-group">
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Tipos de busca</button>
+              <ul style="padding-left: .4rem;" class="dropdown-menu">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" checked id="flexRadioDefault1">
+                  <label class="form-check-label" for="flexRadioDefault1">
+                   Padrão 
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" >
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    Situação
+                  </label>
+                </div>
+              </ul>
               <input type="search" v-on:keyup.enter="getPedido" v-model="busca" class="form-control"
                 placeholder="Buscar pedido" aria-label="Text input with segment">
               <button v-on:click="getPedido" class="btn btn-outline-secondary" type="button">
